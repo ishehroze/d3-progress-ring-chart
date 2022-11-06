@@ -14,29 +14,24 @@ var svg = d3.select("#my_dataviz")
 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 // Create dummy data
-var data = {a: 9, b: 20, c:30, d:8, e:12};
+var splits = 20;
+var data = Array(20).fill(100 / splits);
 
-// set the color scale
-var color = d3.scaleOrdinal()
-.domain(data)
-.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56"]);
+// set the color
+var color = "#98abc5";
 
 // Compute the position of each group on the pie:
-var pie = d3.pie()
-.value(function(d) {return d.value; });
-var data_ready = pie(d3.entries(data));
+var pie = d3.pie();
 
 // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-svg
-.selectAll('path')
-.data(data_ready)
-.enter()
-.append('path')
-.attr('d', d3.arc()
-.innerRadius(100)         // This is the size of the donut hole
-.outerRadius(radius)
-)
-.attr('fill', function(d){ return(color(d.data.key)) })
-.attr("stroke", "black")
-.style("stroke-width", "2px")
-.style("opacity", 0.7);
+svg.selectAll('path')
+    .data(pie(data))
+    .enter()
+    .append('path')
+    .attr('d', d3.arc()
+        .innerRadius(100)         // This is the size of the donut hole
+        .outerRadius(radius)
+        .padAngle(0.02)
+    )
+    .attr('fill', color)
+    .style("opacity", 0.7);
