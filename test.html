@@ -4,9 +4,18 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="progress-chart.css" />
     <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="progress-chart.js"></script>
 </head>
 <body>
     <svg id="my_dataviz"></svg>
-    <script src="progress-chart.js"></script>
+    <script>
+        var svgSelector = "#my_dataviz",
+        width = 450,
+        scorePct = 50,
+        gradelabel = "Marginal",
+        color = "#00B050";
+
+        drawProgressChart(svgSelector, width, scorePct, gradelabel, color);
+    </script>
 </body>
 </html>

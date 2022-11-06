@@ -1,54 +1,76 @@
-// set the dimensions and margins of the graph
-var width = 450,
-height = width,
-margin = width * 0.1,
-baseFontSize = width / 6.25,
-holePct = 72,
+const drawProgressChart = function (svgSelector, width, scorePct, gradelabel, color) {
+    height = width,
+    margin = width * 0.1,
+    baseFontSize = width / 6.2,
+    holePct = 72,
+    padAngle = 0.027;
 
-scorePct = 69.5,
-gradelabel = "Marginal",
-color = "#00B050";
+    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+    var radius = Math.min(width, height) / 2 - margin;
 
-// doughnut hole: 68%, margin 
+    // append the svg object to the div called 'my_dataviz'
+    var svg = d3.select(svgSelector)
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("font-size", baseFontSize + "px")
+        .attr("class", "progress-chart")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-var radius = Math.min(width, height) / 2 - margin;
+    // Create dummy data
+    var splits = 21;
+    var splitData = Array(splits).fill(100 / splits);
 
-// append the svg object to the div called 'my_dataviz'
-var svg = d3.select("#my_dataviz")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-    .attr("font-size", baseFontSize + "px")
-    .attr("class", "progress-chart")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    // Compute the position of each group on the pie:
+    var splitPie = d3.pie();
 
-// Create dummy data
-var splits = 20;
-var data = Array(20).fill(100 / splits);
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    svg.selectAll('.splits')
+        .data(splitPie(splitData))
+        .enter()
+        .append('path')
+        .attr("class", "splits")
+        .attr('d', d3.arc()
+            .innerRadius(radius * holePct / 100)         // This is the size of the donut hole
+            .outerRadius(radius)
+            .padAngle(padAngle)
+        )
+        .attr('fill', color);
 
-// Compute the position of each group on the pie:
-var pie = d3.pie();
+    var progressMaskData = [
+        {
+            "value": scorePct,
+            "opacity": 0
+        },
+        {
+            "value": 100 - scorePct,
+            "opacity": 0.8
+        }
+    ];
 
-// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-svg.selectAll('path')
-    .data(pie(data))
-    .enter()
-    .append('path')
-    .attr('d', d3.arc()
-        .innerRadius(radius * holePct / 100)         // This is the size of the donut hole
-        .outerRadius(radius)
-        .padAngle(0.035)
-    )
-    .attr('fill', color)
+    var maskPie = d3.pie().value(d => d.value).sort(null);
 
-svg.append('text')
-    .attr("class", "scorepct")
-    .attr("text-anchor", "middle")
-    .text(scorePct + "%");
+    svg.selectAll('.progress')
+        .data(maskPie(progressMaskData))
+        .enter()
+        .append('path')
+        .attr('class', 'progress')
+        .attr('data-value', d => d.data.value)
+        .attr('d', d3.arc()
+            .innerRadius(radius * holePct / 100)         // This is the size of the donut hole
+            .outerRadius(radius)
+        )
+        .attr('fill', "#FFF")
+        .attr("opacity", d => d.data.opacity);
 
-svg.append('text')
-    .attr("class", "gradelabel")
-    .attr("text-anchor", "middle")
-    .attr("transform", "translate(" + 0 + "," + baseFontSize + ")")
-    .text(gradelabel);    
+    svg.append('text')
+        .attr("class", "scorepct")
+        .attr("text-anchor", "middle")
+        .text(scorePct + "%");
+
+    svg.append('text')
+        .attr("class", "gradelabel")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + 0 + "," + baseFontSize + ")")
+        .text(gradelabel);
+}
