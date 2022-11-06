@@ -1,8 +1,13 @@
 // set the dimensions and margins of the graph
 var width = 450,
-height = 450,
-margin = 40,
-holePct = 68;
+height = width,
+margin = width * 0.1,
+baseFontSize = width / 6.25,
+holePct = 72,
+
+scorePct = 69.5,
+gradelabel = "Marginal",
+color = "#00B050";
 
 // doughnut hole: 68%, margin 
 
@@ -11,17 +16,16 @@ var radius = Math.min(width, height) / 2 - margin;
 
 // append the svg object to the div called 'my_dataviz'
 var svg = d3.select("#my_dataviz")
-.attr("width", width)
-.attr("height", height)
-.append("g")
-.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("font-size", baseFontSize + "px")
+    .attr("class", "progress-chart")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 // Create dummy data
 var splits = 20;
 var data = Array(20).fill(100 / splits);
-
-// set the color
-var color = "#98abc5";
 
 // Compute the position of each group on the pie:
 var pie = d3.pie();
@@ -34,7 +38,17 @@ svg.selectAll('path')
     .attr('d', d3.arc()
         .innerRadius(radius * holePct / 100)         // This is the size of the donut hole
         .outerRadius(radius)
-        .padAngle(0.03)
+        .padAngle(0.035)
     )
     .attr('fill', color)
-    .style("opacity", 0.7);
+
+svg.append('text')
+    .attr("class", "scorepct")
+    .attr("text-anchor", "middle")
+    .text(scorePct + "%");
+
+svg.append('text')
+    .attr("class", "gradelabel")
+    .attr("text-anchor", "middle")
+    .attr("transform", "translate(" + 0 + "," + baseFontSize + ")")
+    .text(gradelabel);    

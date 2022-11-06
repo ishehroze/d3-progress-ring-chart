@@ -1,0 +1,9 @@
+.progress-chart text {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+text.scorepct {
+    font-size: 1em;
+}
+text.gradelabel {
+    font-size: 0.55em;
+}
